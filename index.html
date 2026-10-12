@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PixelRoom – image descriptions for Discord</title>
+<meta name="description" content="PixelRoom is a Discord bot that describes images, GIFs and short videos for blind and visually impaired people. Answers are private and come in your own language.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* The room: dusk inside, daylight outside the window */
+    --room: #231a33;
+    --room-deep: #1a1327;
+    --wall-line: #3b2f52;
+    --ink-on-room: #f6f0ff;
+    --muted-on-room: #cbbfe0;
+    --light: #ffe9a8;
+    --daylight: #fff4d6;
+    --ink-on-day: #2a2140;
+    --muted-on-day: #594c73;
+    --rose: #f4a6c8;
+    --rose-deep: #a3326a;
+
+    --measure: 38rem;
+    --gutter: clamp(1rem, 4vw, 2.5rem);
+    --radius-window: 1.25rem;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--room);
+    color: var(--ink-on-room);
+    font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+
+  a { color: inherit; text-underline-offset: 0.2em; }
+
+  :focus-visible {
+    outline: 3px solid var(--rose);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .skip {
+    position: absolute;
+    left: var(--gutter);
+    top: -4rem;
+    background: var(--light);
+    color: var(--ink-on-day);
+    padding: 0.6rem 1rem;
+    font-weight: 700;
+    border-radius: 0.5rem;
+    z-index: 10;
+  }
+  .skip:focus { top: 1rem; }
+
+  .wrap {
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  /* ---------- Header ---------- */
+  .site-header .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+  .brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .brand-mark {
+    width: 1.6rem;
+    height: 1.6rem;
+    border: 3px solid var(--light);
+    border-radius: 0.35rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--light);
+    overflow: hidden;
+  }
+  .brand-mark span { background: var(--room); }
+  .brand-mark span:nth-child(1) { background: var(--light); opacity: 0.55; }
+
+  .button {
+    display: inline-block;
+    background: var(--light);
+    color: var(--ink-on-day);
+    font-weight: 700;
+    text-decoration: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 999px;
+    border: 2px solid var(--light);
+  }
+  .button:hover { background: var(--daylight); }
+  .button.quiet {
+    background: transparent;
+    color: var(--ink-on-room);
+    border-color: var(--muted-on-room);
+  }
+  .button.quiet:hover { border-color: var(--light); }
+
+  /* ---------- Hero: the dark room and its window ---------- */
+  .hero .wrap {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    padding-top: clamp(2rem, 6vw, 5rem);
+    padding-bottom: clamp(3rem, 8vw, 6rem);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .hero .wrap { grid-template-columns: 1fr 1.05fr; }
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin: 0 0 1.25rem;
+    max-width: 14ch;
+  }
+  .hero .lede {
+    font-size: 1.25rem;
+    color: var(--muted-on-room);
+    max-width: var(--measure);
+    margin: 0 0 2rem;
+  }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+  /* The window: the one bold element on the page */
+  .window {
+    position: relative;
+    margin: 0;
+    padding: 0.9rem;
+    background: var(--wall-line);
+    border-radius: var(--radius-window) var(--radius-window) 0.5rem 0.5rem;
+    box-shadow:
+      0 0 0 1px #4a3c65,
+      0 30px 120px -20px rgba(255, 233, 168, 0.45);
+  }
+  .window::after {
+    /* light spilling onto the floor below the window */
+    content: "";
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    bottom: -3.5rem;
+    height: 3.5rem;
+    background: linear-gradient(to bottom, rgba(255, 233, 168, 0.22), transparent);
+    clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%);
+    pointer-events: none;
+  }
+  .pane {
+    background: var(--daylight);
+    color: var(--ink-on-day);
+    border-radius: calc(var(--radius-window) - 0.4rem) calc(var(--radius-window) - 0.4rem) 0.25rem 0.25rem;
+    padding: clamp(1.1rem, 3vw, 1.75rem);
+    position: relative;
+  }
+  .pane::before {
+    /* the window cross bars */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(var(--wall-line), var(--wall-line)) center / 6px 100% no-repeat,
+      linear-gradient(var(--wall-line), var(--wall-line)) center 38% / 100% 6px no-repeat;
+    opacity: 0.08;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .chat { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+  .chat li { display: grid; gap: 0.15rem; }
+  .who { font-weight: 700; font-size: 0.95rem; }
+  .who .tag {
+    font-weight: 700;
+    font-size: 0.75rem;
+    background: var(--ink-on-day);
+    color: var(--daylight);
+    border-radius: 0.3rem;
+    padding: 0.05rem 0.35rem;
+    margin-left: 0.35rem;
+    vertical-align: 0.1em;
+  }
+  .posted-image {
+    margin-top: 0.35rem;
+    width: min(13rem, 70%);
+    aspect-ratio: 4 / 3;
+    border-radius: 0.6rem;
+    background:
+      radial-gradient(circle at 70% 30%, #ffd36e 0 14%, transparent 15%),
+      linear-gradient(170deg, #f7b3d0 0%, #c98fd6 45%, #6f5aa8 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .posted-image::after {
+    content: "";
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    bottom: -35%;
+    height: 70%;
+    background: #3f8a6b;
+    border-radius: 50% 50% 0 0;
+  }
+  .command {
+    font-weight: 700;
+    color: var(--rose-deep);
+  }
+  .private-note {
+    font-size: 0.85rem;
+    color: var(--muted-on-day);
+    font-style: italic;
+  }
+
+  .window figcaption {
+    color: var(--muted-on-room);
+    font-size: 0.95rem;
+    padding: 0.8rem 0.25rem 0;
+  }
+
+  /* One orchestrated moment: the light comes on */
+  @media (prefers-reduced-motion: no-preference) {
+    .pane { animation: dawn 1.4s ease-out both; }
+    .window { animation: glow 1.8s ease-out both; }
+    @keyframes dawn {
+      from { filter: brightness(0.35) saturate(0.6); }
+      to { filter: none; }
+    }
+    @keyframes glow {
+      from { box-shadow: 0 0 0 1px #4a3c65, 0 30px 120px -20px rgba(255, 233, 168, 0); }
+      to { box-shadow: 0 0 0 1px #4a3c65, 0 30px 120px -20px rgba(255, 233, 168, 0.45); }
+    }
+  }
+
+  /* ---------- Daylight sections ---------- */
+  .day {
+    background: var(--daylight);
+    color: var(--ink-on-day);
+  }
+  .day a { color: var(--rose-deep); }
+
+  section > .wrap { padding-top: clamp(3rem, 8vw, 5.5rem); padding-bottom: clamp(3rem, 8vw, 5.5rem); }
+
+  h2 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    line-height: 1.15;
+    margin: 0 0 1rem;
+    max-width: 20ch;
+  }
+  .intro {
+    max-width: var(--measure);
+    margin: 0 0 2.5rem;
+  }
+  .day .intro { color: var(--muted-on-day); }
+  .night .intro { color: var(--muted-on-room); }
+
+  /* How it works: a real sequence, so it is numbered */
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2rem;
+    counter-reset: step;
+  }
+  @media (min-width: 760px) {
+    .steps { grid-template-columns: repeat(3, 1fr); }
+  }
+  .steps li {
+    counter-increment: step;
+    border-top: 3px solid var(--ink-on-day);
+    padding-top: 1rem;
+  }
+  .steps li::before {
+    content: counter(step);
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+    color: var(--rose-deep);
+  }
+  .steps h3 { margin: 0 0 0.4rem; font-size: 1.25rem; }
+  .steps p { margin: 0; color: var(--muted-on-day); }
+
+  /* Commands: a definition list, read in pairs by screen readers */
+  .commands {
+    margin: 0;
+    display: grid;
+    max-width: 52rem;
+  }
+  .commands > div {
+    display: grid;
+    gap: 0.25rem 2rem;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--wall-line);
+  }
+  .commands > div:first-child { border-top: 1px solid var(--wall-line); }
+  @media (min-width: 700px) {
+    .commands > div { grid-template-columns: 17rem 1fr; }
+  }
+  .commands dt {
+    font-weight: 700;
+    color: var(--light);
+  }
+  .commands dd { margin: 0; color: var(--ink-on-room); }
+  .commands dd small { display: block; color: var(--muted-on-room); font-size: 0.95rem; }
+
+  .menu-path { color: var(--light); font-weight: 700; }
+
+  /* Promises */
+  .promises {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.75rem 3rem;
+    max-width: 60rem;
+  }
+  @media (min-width: 760px) {
+    .promises { grid-template-columns: 1fr 1fr; }
+  }
+  .promises h3 { margin: 0 0 0.3rem; font-size: 1.2rem; }
+  .promises p { margin: 0; color: var(--muted-on-day); }
+
+  /* Privacy */
+  .privacy p { max-width: var(--measure); color: var(--muted-on-room); }
+  .privacy p strong { color: var(--ink-on-room); }
+
+  /* FAQ */
+  .faq-list { max-width: 46rem; }
+  .faq details {
+    border-bottom: 1px solid #e3d6b3;
+    padding: 0.4rem 0;
+  }
+  .faq details:first-of-type { border-top: 1px solid #e3d6b3; }
+  .faq summary {
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0.7rem 0;
+    list-style-position: outside;
+  }
+  .faq details p { margin: 0 0 1rem; color: var(--muted-on-day); }
+
+  /* Closing call */
+  .closing .wrap {
+    text-align: left;
+  }
+  .closing h2 { max-width: 18ch; }
+
+  /* Footer */
+  .site-footer {
+    background: var(--room-deep);
+    color: var(--muted-on-room);
+    font-size: 0.95rem;
+  }
+  .site-footer .wrap {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    justify-content: space-between;
+  }
+  .site-footer ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="PixelRoom, back to top">
+      <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+      PixelRoom
+    </a>
+    <!-- Replace 1559171147738910741 with the Application ID from the Discord Developer Portal -->
+    <a class="button" href="https://discord.com/oauth2/authorize?client_id=1559171147738910741&amp;scope=bot+applications.commands&amp;permissions=68608">Add to Discord</a>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div>
+        <h1 id="hero-title">A window to every image on Discord.</h1>
+        <p class="lede">PixelRoom describes images, GIFs and short videos for blind and visually impaired people. Type one command and hear what everyone else is seeing. Only you get the answer, in your own language.</p>
+        <div class="hero-actions">
+          <a class="button" href="https://discord.com/oauth2/authorize?client_id=1559171147738910741&amp;scope=bot+applications.commands&amp;permissions=68608">Add PixelRoom to your server</a>
+          <a class="button quiet" href="#commands">See the commands</a>
+        </div>
+      </div>
+
+      <figure class="window" aria-labelledby="example-caption">
+        <div class="pane">
+          <ol class="chat">
+            <li>
+              <span class="who">emaenno</span>
+              <span>Look what I found at sunset!</span>
+              <span class="posted-image" role="img" aria-label="A photo, shown here only as a picture."></span>
+            </li>
+            <li>
+              <span class="who">You</span>
+              <span class="command">/describe</span>
+            </li>
+            <li>
+              <span class="who">PixelRoom <span class="tag">APP</span></span>
+              <span>Posted by emaenno, just now. A pink and purple sunset sky over a green hill, with a bright yellow sun low on the right. The mood is calm and warm.</span>
+              <span class="private-note">Only you can see this.</span>
+            </li>
+          </ol>
+        </div>
+        <figcaption id="example-caption">An example: someone posts a photo, you type /describe, and PixelRoom answers privately.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="day" aria-labelledby="how-title">
+    <div class="wrap">
+      <h2 id="how-title">How it works</h2>
+      <p class="intro">PixelRoom stays quiet in the background. It never posts on its own, so it doesn't fill your channels with messages.</p>
+      <ol class="steps">
+        <li>
+          <h3>Someone posts an image</h3>
+          <p>A photo, a screenshot, a meme, a poster, a GIF or a short video clip.</p>
+        </li>
+        <li>
+          <h3>You type /describe</h3>
+          <p>No need to find the message. PixelRoom picks up the latest image in the channel.</p>
+        </li>
+        <li>
+          <h3>Only you get the answer</h3>
+          <p>A short description, written for screen readers, in the language your Discord is set to.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="night" id="commands" aria-labelledby="commands-title">
+    <div class="wrap">
+      <h2 id="commands-title">Commands</h2>
+      <p class="intro">Every answer is private. Other people in the channel don't see that you asked.</p>
+      <dl class="commands">
+        <div>
+          <dt>/describe</dt>
+          <dd>Describes the latest image, GIF or video in the channel.</dd>
+        </div>
+        <div>
+          <dt>/describe detail: long</dt>
+          <dd>A longer, more detailed description, for when the short one isn't enough.</dd>
+        </div>
+        <div>
+          <dt>/describe count: 3</dt>
+          <dd>Describes the last few images in the order they were posted, up to 5.
+            <small>Useful when you come back to a busy conversation.</small></dd>
+        </div>
+        <div>
+          <dt>/describe back: 2</dt>
+          <dd>Describes an earlier image. 2 is the one before the latest, 3 the one before that.</dd>
+        </div>
+        <div>
+          <dt>/ask question: …</dt>
+          <dd>Ask anything about the latest image, like "What colour is her dress?" PixelRoom repeats your question before the answer.</dd>
+        </div>
+        <div>
+          <dt>/readtext</dt>
+          <dd>Reads out all the text in an image, exactly as written. Good for posters, rules and announcements.</dd>
+        </div>
+        <div>
+          <dt>Describe image</dt>
+          <dd>For a specific message: open its menu, then choose <span class="menu-path">Apps, then Describe image</span>.
+            <small>With a keyboard, focus the message and press Shift and F10 to open the menu.</small></dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="day" aria-labelledby="built-title">
+    <div class="wrap">
+      <h2 id="built-title">Made for people who use screen readers</h2>
+      <p class="intro">Every choice in PixelRoom starts with one question: what would make this easier to hear?</p>
+      <ul class="promises">
+        <li>
+          <h3>Short and to the point</h3>
+          <p>The main idea comes first. Game screenshots describe the scene, not every button and health bar.</p>
+        </li>
+        <li>
+          <h3>Your language, automatically</h3>
+          <p>Answers come in the language your Discord is set to. No setup needed.</p>
+        </li>
+        <li>
+          <h3>Text read exactly</h3>
+          <p>Text in an image is written out word for word and never translated, so you get the original.</p>
+        </li>
+        <li>
+          <h3>GIFs that move</h3>
+          <p>PixelRoom watches the whole GIF or clip and tells you what happens in it, not just one frame.</p>
+        </li>
+        <li>
+          <h3>No guessing who people are</h3>
+          <p>Real people are described, never named from their face. Characters from games and films can be named.</p>
+        </li>
+        <li>
+          <h3>Plain text only</h3>
+          <p>No emojis, symbols or formatting that a screen reader would read out loud.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="night privacy" aria-labelledby="privacy-title">
+    <div class="wrap">
+      <h2 id="privacy-title">What happens to images</h2>
+      <p>PixelRoom only looks at an image <strong>when someone asks it to</strong>. Images nobody asks about are never sent anywhere.</p>
+      <p>When you ask, the image is sent to <strong>Google's Gemini AI</strong>, which writes the description. PixelRoom doesn't save the image or the description.</p>
+      <p>Read the full details in the <a href="privacy.html">privacy notice</a>.</p>
+    </div>
+  </section>
+
+  <section class="day faq" aria-labelledby="faq-title">
+    <div class="wrap">
+      <h2 id="faq-title">Questions</h2>
+      <div class="faq-list">
+      <details>
+        <summary>Does it work with my screen reader?</summary>
+        <p>Yes. PixelRoom answers in plain text, which every screen reader can read: NVDA, JAWS, Narrator, VoiceOver and TalkBack.</p>
+      </details>
+      <details>
+        <summary>Can other people see that I asked?</summary>
+        <p>No. The answer appears in the channel, but only you can see it, and it disappears when you reload Discord.</p>
+      </details>
+      <details>
+        <summary>What if the image already has alt text?</summary>
+        <p>You can still ask PixelRoom. It describes the image anyway, so you can compare it with what the person wrote.</p>
+      </details>
+      <details>
+        <summary>Can the description be wrong?</summary>
+        <p>Sometimes. The AI is good, but it can miss details or misread something. If you're unsure, use /ask to check a specific detail.</p>
+      </details>
+      <details>
+        <summary>What does it need to work on my server?</summary>
+        <p>Permission to view channels, send messages and read message history. It doesn't need to manage anything or read anyone's private messages.</p>
+      </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="night closing" aria-labelledby="closing-title">
+    <div class="wrap">
+      <h2 id="closing-title">Open the window on your server.</h2>
+      <p class="intro">It takes a minute to add, and it stays out of the way until someone needs it.</p>
+      <a class="button" href="https://discord.com/oauth2/authorize?client_id=1559171147738910741&amp;scope=bot+applications.commands&amp;permissions=68608">Add PixelRoom to your server</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>PixelRoom is an independent project, not made by Discord.</p>
+    <ul>
+      <li><a href="privacy.html">Privacy notice</a></li>
+      <li><a href="https://discord.gg/28yJ9duk5h">Support server</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>

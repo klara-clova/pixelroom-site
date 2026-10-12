@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy notice – PixelRoom</title>
+<meta name="description" content="How PixelRoom, the Discord image description bot, handles images and data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --room: #231a33;
+    --room-deep: #1a1327;
+    --ink-on-room: #f6f0ff;
+    --muted-on-room: #cbbfe0;
+    --light: #ffe9a8;
+    --daylight: #fff4d6;
+    --ink-on-day: #2a2140;
+    --muted-on-day: #594c73;
+    --rose: #f4a6c8;
+    --rose-deep: #a3326a;
+    --gutter: clamp(1rem, 4vw, 2.5rem);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--daylight);
+    color: var(--ink-on-day);
+    font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.65;
+  }
+  a { color: var(--rose-deep); text-underline-offset: 0.2em; }
+  :focus-visible { outline: 3px solid var(--rose-deep); outline-offset: 3px; border-radius: 4px; }
+  .skip {
+    position: absolute; left: var(--gutter); top: -4rem;
+    background: var(--ink-on-day); color: var(--daylight);
+    padding: 0.6rem 1rem; font-weight: 700; border-radius: 0.5rem;
+  }
+  .skip:focus { top: 1rem; }
+  .site-header { background: var(--room); color: var(--ink-on-room); }
+  .site-header a { color: var(--ink-on-room); }
+  .wrap { max-width: 44rem; margin: 0 auto; padding: 0 var(--gutter); }
+  .site-header .wrap { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+  .brand { font-weight: 700; font-size: 1.25rem; text-decoration: none; }
+  main .wrap { padding-top: clamp(2rem, 6vw, 4rem); padding-bottom: clamp(3rem, 8vw, 5rem); }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; margin: 0 0 0.5rem; }
+  .updated { color: var(--muted-on-day); margin: 0 0 2rem; }
+  h2 { font-size: 1.45rem; line-height: 1.25; margin: 2.5rem 0 0.6rem; }
+  p, li { color: var(--ink-on-day); }
+  ul { padding-left: 1.3rem; }
+  li { margin-bottom: 0.4rem; }
+  .summary {
+    border-left: 4px solid var(--rose-deep);
+    padding: 0.25rem 0 0.25rem 1.1rem;
+    margin: 0 0 1rem;
+  }
+  .site-footer { background: var(--room-deep); color: var(--muted-on-room); font-size: 0.95rem; }
+  .site-footer a { color: var(--muted-on-room); }
+  .site-footer .wrap { padding-top: 2rem; padding-bottom: 2rem; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">PixelRoom</a>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+    <h1>Privacy notice</h1>
+    <!-- Update this date whenever you change the notice -->
+    <p class="updated">Last updated: 12 October 2026</p>
+
+    <div class="summary">
+      <p><strong>In short:</strong> PixelRoom only looks at an image when someone asks it to. The image goes to Google's Gemini AI to write the description. PixelRoom doesn't save images or descriptions.</p>
+    </div>
+
+    <h2>Who runs PixelRoom</h2>
+    <p>PixelRoom is an independent project run by one person in the United Kingdom. It is not made by or connected to Discord. You can reach me through the <a href="https://discord.gg/28yJ9duk5h">PixelRoom support server</a>.</p>
+
+    <h2>What PixelRoom looks at</h2>
+    <p>PixelRoom does nothing until someone uses one of its commands. When you use /describe, /ask, /readtext or the Describe image menu, PixelRoom reads:</p>
+    <ul>
+      <li>the image, GIF or video in the message you chose, or in the latest messages of that channel,</li>
+      <li>your question, if you use /ask,</li>
+      <li>the name of the person who posted the image and when it was posted, to tell you whose image it is,</li>
+      <li>the language your Discord is set to, so it can answer in your language.</li>
+    </ul>
+    <p>To find the latest image, PixelRoom looks through the most recent messages in the channel. It ignores everything except images, GIFs and videos, and it doesn't keep any of the messages.</p>
+
+    <h2>What PixelRoom does not do</h2>
+    <ul>
+      <li>It doesn't save images, videos, descriptions or your questions.</li>
+      <li>It doesn't read private messages.</li>
+      <li>It doesn't identify real people from their faces.</li>
+      <li>It doesn't sell or share data with anyone except Google, as explained below.</li>
+    </ul>
+
+    <h2>Google Gemini</h2>
+    <p>The descriptions are written by Google's Gemini AI. When you ask PixelRoom about an image, the image (and your question, if you asked one) is sent to Google to create the answer. Google handles this data under its own terms for paid API use, which say that it is not used to train Google's AI models. You can read <a href="https://ai.google.dev/gemini-api/terms">Google's Gemini API terms</a>.</p>
+
+    <h2>Technical logs</h2>
+    <p>To find and fix problems, PixelRoom keeps a short technical log on its server. It records which command was used, by which Discord username, and the file name of the image. It never records the image itself, the description, or your question. Logs are deleted automatically after 14 days.</p>
+
+    <h2>Your rights</h2>
+    <p>Under UK data protection law you can ask what information about you is held, ask for it to be deleted, or object to how it is used. Because PixelRoom keeps almost nothing, the only data about you would be in the technical logs, and those are deleted within 14 days anyway. To make a request, contact me on the support server.</p>
+    <p>If you're not happy with how your data is handled, you can complain to the Information Commissioner's Office (ICO) at <a href="https://ico.org.uk">ico.org.uk</a>.</p>
+
+    <h2>Removing PixelRoom</h2>
+    <p>Server admins can remove PixelRoom at any time from the server settings. Once it is removed, it can't see anything on that server.</p>
+
+    <h2>Changes</h2>
+    <p>If this notice changes, the date at the top will be updated.</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p><a href="index.html">Back to the PixelRoom home page</a></p>
+  </div>
+</footer>
+</body>
+</html>
